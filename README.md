@@ -31,6 +31,15 @@ Workflow command:
 pages deploy . --project-name=$CLOUDFLARE_PAGES_PROJECT
 ```
 
+## Engineering tools
+
+- `/fireproofing/index.html` — Persian (RTL, Vazirmatn) dashboard for structural
+  engineers: input the column **section factor (Hp/A)**, pick a fire resistance
+  rating (60/90/120 min), and the steel skeleton tonnage. It returns a suggested
+  fire-protection coating thickness and the required material mass for **Proterm
+  (350 kg/m³)** versus a user-defined competitor brand density, with a visual
+  comparison. Self-contained single file (no build step).
+
 ## Content notes
 
 - Company legal details are published under `/en/legal.html`, `/es/legal.html`, `/de/legal.html`.
