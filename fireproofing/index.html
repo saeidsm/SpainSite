@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>داشبورد محاسبه پوشش ضد حریق سازه فولادی</title>
+<meta name="description" content="ابزار مهندسی برای پیشنهاد ضخامت پوشش ضد حریق ستون فولادی بر اساس سکشن فکتور و میزان مقاومت در برابر حریق، و محاسبه تناژ مواد لازم.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0f1720;
+    --bg-soft:#16212e;
+    --surface:#1b2735;
+    --surface-2:#22324461;
+    --line:#2c3e52;
+    --text:#eaf1f8;
+    --muted:#9bb0c4;
+    --brand:#16b8a6;        /* پروترم */
+    --brand-2:#0e8c7f;
+    --rival:#f0a23b;        /* رقیب */
+    --accent:#4f8cff;
+    --danger:#ff6b6b;
+    --radius:18px;
+    --shadow:0 18px 40px -22px rgba(0,0,0,.7);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Vazirmatn","Tahoma",system-ui,sans-serif;
+    background:radial-gradient(1200px 600px at 90% -10%, #1d3a44 0%, transparent 55%),
+               radial-gradient(900px 500px at -10% 10%, #1a2c44 0%, transparent 50%),
+               var(--bg);
+    color:var(--text);
+    line-height:1.7;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{width:min(1080px,94vw);margin:0 auto;padding:clamp(1rem,3vw,2.5rem) 0 3rem;}
+
+  /* ---------- Header ---------- */
+  header.top{
+    display:flex;align-items:center;gap:1rem;flex-wrap:wrap;
+    margin-bottom:1.5rem;
+  }
+  .logo{
+    width:52px;height:52px;border-radius:14px;flex:0 0 auto;
+    display:grid;place-items:center;
+    background:linear-gradient(135deg,var(--brand),var(--brand-2));
+    box-shadow:0 10px 22px -10px var(--brand);
+  }
+  .logo svg{width:30px;height:30px;}
+  .title h1{font-size:clamp(1.15rem,2.6vw,1.55rem);margin:0;font-weight:700;}
+  .title p{margin:.15rem 0 0;color:var(--muted);font-size:.9rem;}
+  .badge{
+    margin-inline-start:auto;background:var(--surface);border:1px solid var(--line);
+    padding:.45rem .9rem;border-radius:999px;font-size:.82rem;color:var(--muted);
+  }
+  .badge b{color:var(--brand);}
+
+  /* ---------- Layout ---------- */
+  .grid{display:grid;grid-template-columns:1fr;gap:1.25rem;}
+  @media(min-width:880px){.grid{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);}}
+
+  .panel{
+    background:linear-gradient(180deg,var(--surface),var(--bg-soft));
+    border:1px solid var(--line);border-radius:var(--radius);
+    padding:clamp(1.1rem,2.5vw,1.6rem);box-shadow:var(--shadow);
+  }
+  .panel h2{font-size:1.05rem;margin:0 0 1.2rem;display:flex;align-items:center;gap:.55rem;}
+  .panel h2 .dot{width:9px;height:9px;border-radius:50%;background:var(--brand);box-shadow:0 0 0 4px #16b8a625;}
+
+  /* ---------- Form ---------- */
+  .field{margin-bottom:1.15rem;}
+  .field>label{display:flex;justify-content:space-between;align-items:center;
+    font-size:.9rem;color:var(--muted);margin-bottom:.5rem;gap:.5rem;}
+  .field>label .hint{font-size:.72rem;color:#6f8499;}
+  .control{position:relative;display:flex;align-items:center;}
+  .control .unit{position:absolute;inset-inline-start:.9rem;color:var(--muted);font-size:.82rem;pointer-events:none;}
+  input[type=number]{
+    width:100%;padding:.8rem 1rem;padding-inline-start:3.2rem;
+    background:var(--bg);border:1px solid var(--line);border-radius:12px;
+    color:var(--text);font-family:inherit;font-size:1rem;outline:none;
+    transition:border-color .15s, box-shadow .15s;
+  }
+  input[type=number]:focus{border-color:var(--brand);box-shadow:0 0 0 3px #16b8a630;}
+  input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+
+  .seg{display:flex;gap:.5rem;flex-wrap:wrap;}
+  .seg input{position:absolute;opacity:0;pointer-events:none;}
+  .seg label{
+    flex:1 1 auto;min-width:84px;text-align:center;cursor:pointer;
+    padding:.7rem .4rem;border:1px solid var(--line);border-radius:12px;
+    background:var(--bg);color:var(--muted);font-size:.9rem;
+    transition:.15s;user-select:none;
+  }
+  .seg label b{display:block;color:var(--text);font-size:1.05rem;font-weight:700;}
+  .seg input:checked + label{
+    border-color:var(--brand);background:#16b8a615;color:var(--brand);
+    box-shadow:0 0 0 3px #16b8a625;
+  }
+  .seg input:focus-visible + label{outline:2px solid var(--accent);}
+
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+  @media(max-width:460px){.row2{grid-template-columns:1fr;}}
+
+  details.adv{margin-top:.4rem;border-top:1px dashed var(--line);padding-top:1rem;}
+  details.adv summary{cursor:pointer;color:var(--muted);font-size:.88rem;list-style:none;display:flex;align-items:center;gap:.4rem;}
+  details.adv summary::-webkit-details-marker{display:none;}
+  details.adv summary::before{content:"⚙";}
+
+  /* ---------- Results ---------- */
+  .result-hero{
+    display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap;
+    background:linear-gradient(135deg,#16b8a618,#16b8a605);
+    border:1px solid #16b8a640;border-radius:14px;padding:1.1rem 1.2rem;margin-bottom:1.25rem;
+  }
+  .result-hero .big{font-size:clamp(2.2rem,7vw,3rem);font-weight:800;color:var(--brand);line-height:1;}
+  .result-hero .lbl{color:var(--muted);font-size:.92rem;}
+  .result-hero small{display:block;color:#6f8499;font-size:.74rem;margin-top:.3rem;}
+
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:1.25rem;}
+  .stat{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:.85rem .95rem;}
+  .stat .k{color:var(--muted);font-size:.8rem;margin-bottom:.25rem;}
+  .stat .v{font-size:1.15rem;font-weight:700;}
+  .stat .v span{font-size:.78rem;font-weight:400;color:var(--muted);}
+
+  /* compare cards */
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:1rem;}
+  @media(max-width:460px){.compare{grid-template-columns:1fr;}}
+  .brandcard{border:1px solid var(--line);border-radius:14px;padding:1rem;position:relative;overflow:hidden;}
+  .brandcard.pro{background:linear-gradient(180deg,#16b8a614,transparent);border-color:#16b8a655;}
+  .brandcard.riv{background:linear-gradient(180deg,#f0a23b14,transparent);border-color:#f0a23b55;}
+  .brandcard .name{display:flex;align-items:center;gap:.45rem;font-weight:700;margin-bottom:.5rem;}
+  .brandcard .name i{width:11px;height:11px;border-radius:3px;display:inline-block;}
+  .pro .name i{background:var(--brand);} .riv .name i{background:var(--rival);}
+  .brandcard .kg{font-size:1.6rem;font-weight:800;}
+  .brandcard .kg span{font-size:.8rem;font-weight:400;color:var(--muted);}
+  .brandcard .sub{font-size:.78rem;color:var(--muted);margin-top:.3rem;}
+  .tag-best{position:absolute;inset-inline-start:0;top:0;background:var(--brand);color:#04130f;
+    font-size:.68rem;font-weight:700;padding:.18rem .6rem;border-end-end-radius:10px;}
+
+  /* chart */
+  .chart{margin-top:.4rem;}
+  .barrow{margin-bottom:1rem;}
+  .barrow .bl{display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:.4rem;}
+  .barrow .bl .val{font-weight:700;}
+  .track{height:18px;background:var(--bg);border-radius:999px;overflow:hidden;border:1px solid var(--line);}
+  .fill{height:100%;border-radius:999px;width:0;transition:width .6s cubic-bezier(.2,.8,.2,1);}
+  .fill.pro{background:linear-gradient(90deg,var(--brand-2),var(--brand));}
+  .fill.riv{background:linear-gradient(90deg,#c97e1f,var(--rival));}
+
+  .note{font-size:.78rem;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);
+    border-radius:12px;padding:.8rem .95rem;margin-top:1rem;line-height:1.8;}
+  .note b{color:var(--text);}
+  .formula{font-family:"Vazirmatn",monospace;direction:ltr;text-align:left;background:var(--bg);
+    border:1px solid var(--line);border-radius:10px;padding:.55rem .8rem;margin:.5rem 0;font-size:.82rem;color:#bcd;}
+
+  footer.foot{text-align:center;color:var(--muted);font-size:.8rem;margin-top:2rem;line-height:2;}
+  footer.foot a{color:var(--brand);text-decoration:none;}
+  .save-msg{color:var(--brand);font-size:.78rem;min-height:1.1em;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="logo" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#04130f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2c1 3-1 4-1 6a3 3 0 0 0 6 0c0-1 0-2-1-3 2 2 4 5 4 9a8 8 0 1 1-16 0c0-4 3-7 5-10 0 2 1 3 2 4 .5-2 1-4 1-6z"/>
+      </svg>
+    </div>
+    <div class="title">
+      <h1>داشبورد پوشش ضد حریق سازه فولادی</h1>
+      <p>پیشنهاد فنی ضخامت پوشش و محاسبه تناژ مواد مورد نیاز</p>
+    </div>
+    <div class="badge">برند مرجع: <b>پروترم</b> · ۳۵۰ kg/m³</div>
+  </header>
+
+  <div class="grid">
+
+    <!-- ====== INPUT PANEL ====== -->
+    <section class="panel" aria-labelledby="in-h">
+      <h2 id="in-h"><span class="dot"></span> ورودی‌های پروژه</h2>
+
+      <div class="field">
+        <label for="sf">سکشن فکتور مقطع ستون (Hp/A)
+          <span class="hint">ضریب مقطع فولادی</span>
+        </label>
+        <div class="control">
+          <span class="unit">m⁻¹</span>
+          <input type="number" id="sf" min="20" max="400" step="1" value="160" inputmode="decimal">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>میزان مقاومت در برابر حریق <span class="hint">استاندارد ۱ تا ۲ ساعت</span></label>
+        <div class="seg" role="radiogroup" aria-label="مقاومت حریق">
+          <input type="radio" name="fr" id="fr60"  value="60">
+          <label for="fr60"><b>۶۰′</b>۱ ساعت</label>
+          <input type="radio" name="fr" id="fr90"  value="90" checked>
+          <label for="fr90"><b>۹۰′</b>۱.۵ ساعت</label>
+          <input type="radio" name="fr" id="fr120" value="120">
+          <label for="fr120"><b>۱۲۰′</b>۲ ساعت</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="tonnage">حجم / تناژ اسکلت فولادی
+          <span class="hint">وزن کل فولاد پروژه</span>
+        </label>
+        <div class="control">
+          <span class="unit">تن</span>
+          <input type="number" id="tonnage" min="0" step="0.1" value="250" inputmode="decimal">
+        </div>
+      </div>
+
+      <div class="row2">
+        <div class="field" style="margin-bottom:0">
+          <label for="dPro">چگالی پروترم</label>
+          <div class="control">
+            <span class="unit">kg/m³</span>
+            <input type="number" id="dPro" min="50" step="1" value="350" inputmode="decimal">
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label for="dRiv">چگالی برند رقیب</label>
+          <div class="control">
+            <span class="unit">kg/m³</span>
+            <input type="number" id="dRiv" min="50" step="1" value="780" inputmode="decimal">
+          </div>
+        </div>
+      </div>
+
+      <details class="adv">
+        <summary>تنظیمات پیشرفته</summary>
+        <div class="row2" style="margin-top:1rem">
+          <div class="field" style="margin-bottom:0">
+            <label for="tcrit">دمای بحرانی فولاد</label>
+            <div class="control">
+              <span class="unit">°C</span>
+              <input type="number" id="tcrit" min="400" max="700" step="10" value="550" inputmode="numeric">
+            </div>
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <label for="waste">ضریب پرت اجرا</label>
+            <div class="control">
+              <span class="unit">%</span>
+              <input type="number" id="waste" min="0" max="40" step="1" value="10" inputmode="numeric">
+            </div>
+          </div>
+        </div>
+        <p class="save-msg" id="saveMsg"></p>
+      </details>
+    </section>
+
+    <!-- ====== RESULT PANEL ====== -->
+    <section class="panel" aria-labelledby="out-h" aria-live="polite">
+      <h2 id="out-h"><span class="dot"></span> پیشنهاد فنی</h2>
+
+      <div class="result-hero">
+        <div class="big" id="thk">—</div>
+        <div>
+          <div class="lbl">ضخامت پیشنهادی پوشش (میلی‌متر)</div>
+          <small id="thkSub">—</small>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="k">سطح پوشش‌دهی کل</div>
+          <div class="v" id="area">— <span>m²</span></div>
+        </div>
+        <div class="stat">
+          <div class="k">مصرف پروترم در واحد سطح</div>
+          <div class="v" id="perArea">— <span>kg/m²</span></div>
+        </div>
+      </div>
+
+      <div class="compare">
+        <div class="brandcard pro">
+          <span class="tag-best" id="bestTag" hidden>سبک‌تر</span>
+          <div class="name"><i></i> پروترم</div>
+          <div class="kg"><span id="kgProUnit"></span><span class="kg-n" id="kgPro">—</span> <span>kg</span></div>
+          <div class="sub" id="proSub">—</div>
+        </div>
+        <div class="brandcard riv">
+          <div class="name"><i></i> برند رقیب</div>
+          <div class="kg"><span class="kg-n" id="kgRiv">—</span> <span>kg</span></div>
+          <div class="sub" id="rivSub">—</div>
+        </div>
+      </div>
+
+      <div class="chart">
+        <div class="barrow">
+          <div class="bl"><span>پروترم</span><span class="val" id="vPro">—</span></div>
+          <div class="track"><div class="fill pro" id="barPro"></div></div>
+        </div>
+        <div class="barrow">
+          <div class="bl"><span>برند رقیب</span><span class="val" id="vRiv">—</span></div>
+          <div class="track"><div class="fill riv" id="barRiv"></div></div>
+        </div>
+        <p class="sub" id="diffMsg" style="font-size:.82rem;color:var(--muted);margin:.2rem 0 0"></p>
+      </div>
+
+      <div class="note">
+        <b>مبنای محاسبه:</b> جرم پوشش در واحد سطح = ضخامت پوشش (متر) × چگالی پوشش (kg/m³).
+        <div class="formula" id="fEq">mass/area = t(m) × ρ(kg/m³)</div>
+        سطح پوشش‌دهی از روی تناژ اسکلت و سکشن فکتور برآورد می‌شود:
+        <div class="formula">Area = Steel(kg) × (Hp/A) ÷ 7850 (ρ فولاد)</div>
+        ضخامت بر اساس جداول عملکردی پوشش سیمانی-ورمیکولیتی و دمای بحرانی محاسبه شده و جنبهٔ راهنما دارد؛ تأیید نهایی نیازمند دیتاشیت و گواهی آتش برند است.
+      </div>
+    </section>
+
+  </div>
+
+  <footer class="foot">
+    داشبورد مهندسی محافظت در برابر حریق — نسخهٔ ۱.۰<br>
+    اعداد جنبهٔ پیش‌برآورد دارند و جایگزین محاسبات تأییدشدهٔ آتش‌نشانی و دیتاشیت سازنده نیستند.
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // جدول ضخامت (mm) پوشش سیمانی-ورمیکولیتی، دمای بحرانی مرجع 550°C
+  // ستون‌ها: سکشن فکتور (m^-1)
+  var SF = [50, 100, 150, 200, 250, 300];
+  var TABLE = {
+    60:  [8, 10, 12, 13.5, 14.5, 15.5],
+    90:  [12, 15, 18, 20, 21.5, 23],
+    120: [16, 20, 24.5, 27.5, 29.5, 31.5]
+  };
+  var RHO_STEEL = 7850; // kg/m³
+
+  var fa = function(n, dec){
+    if(!isFinite(n)) return "—";
+    var s = Number(n).toLocaleString('fa-IR', {maximumFractionDigits: dec===undefined?2:dec, minimumFractionDigits:0});
+    return s;
+  };
+
+  // درون‌یابی خطی ضخامت بر حسب سکشن فکتور
+  function interp(arr, sf){
+    if(sf <= SF[0]) return arr[0];
+    if(sf >= SF[SF.length-1]) return arr[arr.length-1];
+    for(var i=0;i<SF.length-1;i++){
+      if(sf >= SF[i] && sf <= SF[i+1]){
+        var r = (sf - SF[i])/(SF[i+1]-SF[i]);
+        return arr[i] + r*(arr[i+1]-arr[i]);
+      }
+    }
+    return arr[arr.length-1];
+  }
+
+  // اصلاح بر اساس دمای بحرانی (مرجع 550°C)
+  function tempFactor(tc){
+    // دمای بحرانی پایین‌تر → ضخامت بیشتر
+    var f = 1 + (550 - tc) * 0.0024;
+    return Math.max(0.7, Math.min(1.4, f));
+  }
+
+  var ids = ['sf','tonnage','dPro','dRiv','tcrit','waste'];
+  var el = {};
+  ids.forEach(function(id){ el[id] = document.getElementById(id); });
+  function frVal(){ var c = document.querySelector('input[name=fr]:checked'); return c ? +c.value : 90; }
+
+  function num(x, def){ var v = parseFloat(x); return isFinite(v) ? v : def; }
+
+  function calc(){
+    var sf      = num(el.sf.value, 0);
+    var fr      = frVal();
+    var ton     = num(el.tonnage.value, 0);
+    var dPro    = num(el.dPro.value, 350);
+    var dRiv    = num(el.dRiv.value, 0);
+    var tc      = num(el.tcrit.value, 550);
+    var waste   = num(el.waste.value, 0)/100;
+
+    var sfClamped = Math.max(20, Math.min(400, sf||0));
+
+    // ضخامت پیشنهادی (mm)
+    var thkMm = interp(TABLE[fr], sfClamped) * tempFactor(tc);
+    var thkM  = thkMm/1000;
+
+    // سطح پوشش‌دهی از تناژ و سکشن فکتور
+    var steelKg = ton * 1000;
+    var area = (sf>0) ? steelKg * sf / RHO_STEEL : 0;   // m²
+
+    var perAreaPro = thkM * dPro;          // kg/m²
+    var wf = 1 + waste;
+    var kgPro = area * perAreaPro * wf;
+    var kgRiv = area * thkM * dRiv * wf;
+
+    // --- نمایش ---
+    document.getElementById('thk').textContent = fa(thkMm,1);
+    document.getElementById('thkSub').textContent =
+      'برای مقاومت ' + fa(fr,0) + ' دقیقه · سکشن فکتور ' + fa(sf,0) + ' · دمای بحرانی ' + fa(tc,0) + '°C';
+
+    document.getElementById('area').innerHTML = fa(area,1) + ' <span>m²</span>';
+    document.getElementById('perArea').innerHTML = fa(perAreaPro,2) + ' <span>kg/m²</span>';
+
+    document.getElementById('kgPro').textContent = fa(kgPro, kgPro<1000?1:0);
+    document.getElementById('kgRiv').textContent = (dRiv>0)? fa(kgRiv, kgRiv<1000?1:0) : '—';
+    document.getElementById('proSub').textContent = 'چگالی ' + fa(dPro,0) + ' kg/m³ · معادل ' + fa(kgPro/1000,2) + ' تن';
+    document.getElementById('rivSub').textContent = (dRiv>0)? ('چگالی ' + fa(dRiv,0) + ' kg/m³ · معادل ' + fa(kgRiv/1000,2) + ' تن') : 'چگالی رقیب را وارد کنید';
+
+    document.getElementById('fEq').textContent =
+      'mass/area = ' + thkM.toFixed(4) + ' m × ' + dPro + ' = ' + perAreaPro.toFixed(2) + ' kg/m²';
+
+    // نمودار مقایسه
+    var maxKg = Math.max(kgPro, (dRiv>0?kgRiv:0), 1);
+    document.getElementById('barPro').style.width = (kgPro/maxKg*100) + '%';
+    document.getElementById('barRiv').style.width = (dRiv>0 ? kgRiv/maxKg*100 : 0) + '%';
+    document.getElementById('vPro').textContent = fa(kgPro,0) + ' kg';
+    document.getElementById('vRiv').textContent = (dRiv>0)? (fa(kgRiv,0) + ' kg') : '—';
+
+    // بهترین گزینه از نظر وزن
+    var bestTag = document.getElementById('bestTag');
+    var diff = document.getElementById('diffMsg');
+    if(dRiv>0 && kgPro>0){
+      bestTag.hidden = (kgPro > kgRiv);
+      var d = kgRiv - kgPro;
+      if(d > 0){
+        diff.textContent = 'پروترم حدود ' + fa(d,0) + ' کیلوگرم (' + fa(d/kgRiv*100,0) + '٪) سبک‌تر از برند رقیب است.';
+      } else if(d < 0){
+        diff.textContent = 'برند رقیب حدود ' + fa(-d,0) + ' کیلوگرم سبک‌تر است (به‌دلیل چگالی کمتر).';
+      } else { diff.textContent = ''; }
+    } else {
+      bestTag.hidden = true; diff.textContent = '';
+    }
+
+    save();
+  }
+
+  // ذخیرهٔ ورودی‌ها
+  function save(){
+    try{
+      var data = {fr:frVal()};
+      ids.forEach(function(id){ data[id] = el[id].value; });
+      localStorage.setItem('fireproofing.v1', JSON.stringify(data));
+      var m = document.getElementById('saveMsg'); if(m) m.textContent = 'ورودی‌ها ذخیره شد ✓';
+    }catch(e){}
+  }
+  function load(){
+    try{
+      var data = JSON.parse(localStorage.getItem('fireproofing.v1')||'{}');
+      ids.forEach(function(id){ if(data[id]!==undefined && data[id]!=='') el[id].value = data[id]; });
+      if(data.fr){ var r = document.getElementById('fr'+data.fr); if(r) r.checked = true; }
+    }catch(e){}
+  }
+
+  // اتصال رویدادها
+  load();
+  ids.forEach(function(id){ el[id].addEventListener('input', calc); });
+  Array.prototype.forEach.call(document.querySelectorAll('input[name=fr]'), function(r){
+    r.addEventListener('change', calc);
+  });
+  calc();
+})();
+</script>
+</body>
+</html>
