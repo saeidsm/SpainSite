@@ -1,0 +1,100 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "label": "README.md",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "readme",
+      "community": 0,
+      "norm_label": "readme.md"
+    },
+    {
+      "label": "AlumGlass Spain Site (Cloudflare Pages)",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "readme_alumglass_spain_site_cloudflare_pages",
+      "community": 0,
+      "norm_label": "alumglass spain site (cloudflare pages)"
+    },
+    {
+      "label": "Structure",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L9",
+      "_origin": "ast",
+      "id": "readme_structure",
+      "community": 0,
+      "norm_label": "structure"
+    },
+    {
+      "label": "Deploy on GitHub Actions",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L18",
+      "_origin": "ast",
+      "id": "readme_deploy_on_github_actions",
+      "community": 0,
+      "norm_label": "deploy on github actions"
+    },
+    {
+      "label": "Content notes",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L34",
+      "_origin": "ast",
+      "id": "readme_content_notes",
+      "community": 0,
+      "norm_label": "content notes"
+    }
+  ],
+  "links": [
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "readme",
+      "target": "readme_alumglass_spain_site_cloudflare_pages",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L34",
+      "weight": 1.0,
+      "source": "readme_alumglass_spain_site_cloudflare_pages",
+      "target": "readme_content_notes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "readme_alumglass_spain_site_cloudflare_pages",
+      "target": "readme_deploy_on_github_actions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "readme_alumglass_spain_site_cloudflare_pages",
+      "target": "readme_structure",
+      "confidence_score": 1.0
+    }
+  ],
+  "hyperedges": []
+}
